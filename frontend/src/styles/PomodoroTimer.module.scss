@@ -1,0 +1,19 @@
+.TimerContainer {
+  margin: 2em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .TimerTabs {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .Timer {
+    margin: 1em 0;
+  }
+  
+  .TimerButton {
+    margin: 0 0.5em;
+  }
+}

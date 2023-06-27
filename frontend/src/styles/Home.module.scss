@@ -1,0 +1,13 @@
+@import './constants.scss';
+
+.Navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 5em;
+  background-color: $color-light-gray;
+}
+
+.Spacing {
+  flex-grow: 1;
+}
