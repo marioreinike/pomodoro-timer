@@ -1,1 +1,1 @@
-export type ITImerType = 'pomodoro' | 'shortBreak' | 'longBreak';
+export type ITimerType = 'pomodoro' | 'shortBreak' | 'longBreak';

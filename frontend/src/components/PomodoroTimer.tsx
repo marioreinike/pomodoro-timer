@@ -1,38 +1,49 @@
-import { useState } from 'react';
-import { Button, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { ITImerType } from '../interfaces';
+import { useContext, useState } from 'react';
+import {
+  Button, IconButton, ToggleButton, ToggleButtonGroup,
+} from '@mui/material';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import { ITimerType } from '../interfaces';
 import styles from '../styles/PomodoroTimer.module.scss';
 import CircularProgress from './CircularProgress';
 import { formatSecondstoString } from '../helpers/timeHelpers';
-import { ITimerSettings } from '../interfaces/ITimerSettings';
+import { confirm } from '../helpers/confirm';
+import { AppContext } from './AppContextProvider';
 
 interface TimerProps {
-  settings: ITimerSettings;
+  onTimerComplete: (timerTime: ITimerType, elapsedTime: number) => ITimerType;
 }
 
-export default function PomodoroTimer(props: TimerProps) {
-  const { settings: { times } } = props;
-  const [timerType, setTimerType] = useState<ITImerType>('pomodoro');
+export default function PomodoroTimer({ onTimerComplete }: TimerProps) {
+  const { settings: { times } } = useContext(AppContext);
+  const [timerType, setTimerType] = useState<ITimerType>('pomodoro');
   const [timerValue, setTimerValue] = useState<number>(times.pomodoro);
   const [timerRunning, setTimerRunning] = useState<boolean>(false);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
   const remainingPercent = (timerValue / times[timerType]) * 100;
-  const [pomodoroElapsedTime, setPomodoroElapsedTime] = useState<number>(0);
-  const [pomodoroCount, setPomodoroCount] = useState<number>(1);
   const elapsedTime = times[timerType] - timerValue;
 
-  const handleTimerTypeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newTimerType: ITImerType,
+  const handleTimerTypeChange = async (
+    event: React.MouseEvent<HTMLElement> | null,
+    newTimerType: ITimerType,
   ) => {
-    setTimerType(newTimerType);
-    resetTimer();
+    if (newTimerType === null) {
+      return;
+    }
+    if (await resetTimer(newTimerType)) {
+      setTimerType(newTimerType);
+    }
+  };
+
+  const handleTimerComplete = () => {
+    const newTimerType = onTimerComplete(timerType, elapsedTime);
+    handleTimerTypeChange(null, newTimerType);
   };
 
   const tick = () => {
     setTimerValue((prevTimerValue) => prevTimerValue - 1);
-    if (timerType === 'pomodoro') {
-      setPomodoroElapsedTime((prevElapsedTime) => prevElapsedTime + 1);
+    if (timerValue < 0) {
+      handleTimerComplete();
     }
   };
 
@@ -49,9 +60,16 @@ export default function PomodoroTimer(props: TimerProps) {
     }
   };
 
-  const resetTimer = () => {
+  const resetTimer = async (newTimerType?: ITimerType): Promise<boolean> => {
+    const skipConfirmation = !timerRunning && elapsedTime === 0;
+    const confirmed = skipConfirmation || await confirm('This will reset the timer.');
+    if (!confirmed) {
+      return false;
+    }
+    const timerTypeToUse = newTimerType || timerType;
     pauseTimer();
-    setTimerValue(times[timerType]);
+    setTimerValue(times[timerTypeToUse]);
+    return true;
   };
 
   return (
@@ -86,9 +104,11 @@ export default function PomodoroTimer(props: TimerProps) {
         <Button className={styles.TimerButton} variant="contained" onClick={startTimer}>Start</Button>
       )
       }
-      {elapsedTime > 0 && (
-        <Button className={styles.TimerButton} variant="contained" color='primary' onClick={resetTimer}>Reset</Button>
-      )}
+      {(timerRunning || elapsedTime > 0) && (<>
+        <IconButton className={styles.TimerButton} onClick={handleTimerComplete}>
+          <SkipNextIcon />
+        </IconButton>
+      </>)}
     </div>
   </div>
   );
