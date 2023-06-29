@@ -13,7 +13,7 @@ export default function PomodoroCounter() {
 
   const handleTimerComplete = (timerType: ITimerType, elapsedTime: number): ITimerType => {
     if (timerType === 'pomodoro') {
-      setPomodoroElapsedTime(elapsedTime);
+      setPomodoroElapsedTime((prevElapsedTime) => prevElapsedTime + elapsedTime);
       const newPomodoroCount = pomodoroCount + 1;
       setPomodoroCount(newPomodoroCount);
       if (newPomodoroCount % settings.longBreakInterval === 0) {
