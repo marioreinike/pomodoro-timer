@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import { ITimerType } from '../interfaces';
 import PomodoroTimer from './PomodoroTimer';
 import { AppContext } from './AppContextProvider';
-import styles from '../styles/PomodoroCounter.module.scss';
 import commonStyles from '../styles/Common.module.scss';
 import ActionsMenu from './ActionsMenu';
 import { formatSecondsToReadableString } from '../helpers/timeHelpers';
