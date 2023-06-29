@@ -1,9 +1,10 @@
 import { useContext, useState } from 'react';
-import { Button } from '@mui/material';
 import { ITimerType } from '../interfaces';
 import PomodoroTimer from './PomodoroTimer';
 import { AppContext } from './AppContextProvider';
 import styles from '../styles/PomodoroCounter.module.scss';
+import commonStyles from '../styles/Common.module.scss';
+import ActionsMenu from './ActionsMenu';
 
 export default function PomodoroCounter() {
   const { settings, api } = useContext(AppContext);
@@ -34,16 +35,15 @@ export default function PomodoroCounter() {
 
   return (<>
     <PomodoroTimer onTimerComplete={handleTimerComplete} />
-    <div className={styles.PomodoroSession}>
+    <h3>Current Session</h3>
+    <div className={commonStyles.SessionContainer}>
       <div>
-        <h3>Current Session</h3>
         <div>Completed Pomodoros: {pomodoroCount}</div>
         <div>Pomodoro Elapsed Time: {pomodoroElapsedTime}</div>
       </div>
 
       <div>
-        <Button variant="contained" onClick={handleSaveSession}>Save Session</Button>
-        <Button variant="contained" color='info' onClick={handleResetSession}>Reset Session</Button>
+        <ActionsMenu onSaveSession={handleSaveSession} onResetSession={handleResetSession} />
       </div>
     </div>
   </>);
