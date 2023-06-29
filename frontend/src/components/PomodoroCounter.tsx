@@ -5,6 +5,7 @@ import { AppContext } from './AppContextProvider';
 import styles from '../styles/PomodoroCounter.module.scss';
 import commonStyles from '../styles/Common.module.scss';
 import ActionsMenu from './ActionsMenu';
+import { formatSecondsToReadableString } from '../helpers/timeHelpers';
 
 export default function PomodoroCounter() {
   const { settings, api } = useContext(AppContext);
@@ -39,7 +40,7 @@ export default function PomodoroCounter() {
     <div className={commonStyles.SessionContainer}>
       <div>
         <div>Completed Pomodoros: {pomodoroCount}</div>
-        <div>Pomodoro Elapsed Time: {pomodoroElapsedTime}</div>
+        <div>Pomodoro Elapsed Time: {formatSecondsToReadableString(pomodoroElapsedTime)}</div>
       </div>
 
       <div>

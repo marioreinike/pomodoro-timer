@@ -9,6 +9,9 @@ export function formatSecondstoString(seconds: number): string {
 
 // format seconds to string readable format (e.g. 1h 30m 2s)
 export function formatSecondsToReadableString(seconds: number): string {
+  if (seconds === 0) {
+    return '0s';
+  }
   const hours = Math.floor(seconds / 3600);
   const hoursString = hours > 0 ? `${hours}h ` : '';
   const minutes = Math.floor((seconds % 3600) / 60);
