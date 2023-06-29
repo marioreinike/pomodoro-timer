@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   Button, IconButton, ToggleButton, ToggleButtonGroup,
 } from '@mui/material';
@@ -15,13 +15,17 @@ interface TimerProps {
 }
 
 export default function PomodoroTimer({ onTimerComplete }: TimerProps) {
-  const { settings: { times } } = useContext(AppContext);
+  const { settings: { times, longBreakInterval } } = useContext(AppContext);
   const [timerType, setTimerType] = useState<ITimerType>('pomodoro');
   const [timerValue, setTimerValue] = useState<number>(times.pomodoro);
   const [timerRunning, setTimerRunning] = useState<boolean>(false);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
   const remainingPercent = (timerValue / times[timerType]) * 100;
   const elapsedTime = times[timerType] - timerValue;
+
+  useEffect(() => {
+    resetTimer({ force: true });
+  }, [times, longBreakInterval]);
 
   const handleTimerTypeChange = async (
     event: React.MouseEvent<HTMLElement> | null,
@@ -30,7 +34,7 @@ export default function PomodoroTimer({ onTimerComplete }: TimerProps) {
     if (newTimerType === null) {
       return;
     }
-    if (await resetTimer(newTimerType)) {
+    if (await resetTimer({ newTimerType })) {
       setTimerType(newTimerType);
     }
   };
@@ -60,9 +64,12 @@ export default function PomodoroTimer({ onTimerComplete }: TimerProps) {
     }
   };
 
-  const resetTimer = async (newTimerType?: ITimerType): Promise<boolean> => {
+  const resetTimer = async (
+    options: { newTimerType?: ITimerType, force?: boolean } = {},
+  ): Promise<boolean> => {
+    const { newTimerType, force = false } = options;
     const skipConfirmation = !timerRunning && elapsedTime === 0;
-    const confirmed = skipConfirmation || await confirm('This will reset the timer.');
+    const confirmed = force || skipConfirmation || await confirm('This will reset the timer.');
     if (!confirmed) {
       return false;
     }
