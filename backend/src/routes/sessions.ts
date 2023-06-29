@@ -5,7 +5,7 @@ const router = new Router();
 
 // LIST
 router.get('/', async (ctx) => {
-  const sessions = await Session.findAll();
+  const sessions = await Session.findAll({ order: [['createdAt', 'DESC']] });
   ctx.body = sessions;
 });
 
